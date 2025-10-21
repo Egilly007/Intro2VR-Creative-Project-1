@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Move : MonoBehaviour
 {
@@ -10,11 +11,24 @@ public class Move : MonoBehaviour
     Rigidbody rb;
     public GameObject bullet;
 
+    public int pickupCount = 0;
+    public TMP_Text pickupText;
+    public TMP_Text totalDropped;
+
+    public PickupDropOff dropOffref;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0, -1, 0);
+
+        if (dropOffref == null)
+        {
+            dropOffref = FindObjectOfType<PickupDropOff>();
+        }
+
+        UpdatePickupUI();
     }
 
     // Update is called once per frame
@@ -69,6 +83,28 @@ public class Move : MonoBehaviour
         {
             Quaternion bulletRotation = transform.rotation * Quaternion.Euler(90, 0, 0);
             Instantiate(bullet, transform.position + transform.forward * 2 + transform.up * 2, bulletRotation);
+        }
+    }
+
+    public void AddPickup(int amount = 1)
+    {
+        pickupCount += amount;
+        UpdatePickupUI();
+        Debug.Log("Pickups: " + pickupCount);
+    }
+
+    private void UpdatePickupUI()
+    {
+        if (pickupText != null)
+        {
+            pickupText.text = "Pickups: " + pickupCount;
+        }
+        
+        int total = (dropOffref != null) ? dropOffref.totalDropoffs : 0;
+
+        if (totalDropped != null)
+        {
+            totalDropped.text = "Total: " + total;
         }
     }
 }
